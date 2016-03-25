@@ -35,8 +35,45 @@ more parameters .
 
 #include<stdlib.h>
 
+/*
+Prev positions :
+	 1
+2	 x   -2
+	-1
+
+-1 for initial conditions
+*/
+
+int pos(int x, int y, int rows, int cols){
+	//Returning the index based on row and coolumn number
+	return ((x)*(cols)+y + 1) - 1;
+}
+
+bool findPath(int * maze, int rows, int cols, int prev_pos, int cur_r, int cur_c, int targ_r, int targ_f, bool * found){
+	if (cur_r == -1 || cur_c == -1 || cur_r == rows || cur_c == cols)
+		return false;
+	else if (cur_r == targ_r && cur_c == targ_f)
+	{
+		*found = true;
+		return true;
+	}
+	else{
+		//Should move in opposite direction from its previous one, since there may be occurence of infinate loop.
+		if (cur_r != 0 && prev_pos != -1 && maze[pos(cur_r - 1, cur_c, rows, cols)] == 1 && findPath(maze, rows, cols, 1, cur_r - 1, cur_c, targ_r, targ_f, found))
+			return true;
+		else if (cur_c != cols && prev_pos != 2 && maze[pos(cur_r, cur_c + 1, rows, cols)] == 1 && findPath(maze, rows, cols, -2, cur_r, cur_c + 1, targ_r, targ_f, found))
+			return true;
+		else if (cur_r != rows && prev_pos != 1 && maze[pos(cur_r + 1, cur_c, rows, cols)] == 1 && findPath(maze, rows, cols, -1, cur_r + 1, cur_c, targ_r, targ_f, found))
+			return true;
+		else if (cur_c != 0 && prev_pos != -2 && maze[pos(cur_r, cur_c - 1, rows, cols)] == 1 && findPath(maze, rows, cols, 2, cur_r, cur_c - 1, targ_r, targ_f, found))
+			return true;
+	}
+	return false;
+}
 
 int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2)
 {
-	return 1;
+	bool found = false;
+	findPath(maze, rows, columns, -1, x1, y1, x2, y2, &found);
+	return found == false ? 0 : 1;
 }
