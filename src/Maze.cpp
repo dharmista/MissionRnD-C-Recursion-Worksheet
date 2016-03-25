@@ -75,8 +75,9 @@ int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2
 {
 	if (maze == NULL || rows <= 0 || columns <= 0 || x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0)
 		return 0;
+	if (x1 >= rows || x2 >= rows || y1 >= columns || y2 >= columns)
+		return 0;
 	bool found = false;
 	findPath(maze, rows, columns, -1, x1, y1, x2, y2, &found);
-	free(maze);
 	return found == false ? 0 : 1;
 }
