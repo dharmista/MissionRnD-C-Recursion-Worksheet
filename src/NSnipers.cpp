@@ -43,6 +43,74 @@ P.S: The Above Problem is just a modified version of a popular BackTracking prob
 */
 
 #include "stdafx.h"
+bool checkSurroundings(int * battlefiled, int x, int y, int n){
+	//Check horizantal line...
+	for (int i = 0; i < n; i++){
+		if (*((battlefiled + x*n) + i) == 1)
+			return false;
+	}
+	//Check vertical ones...
+	for (int i = 0; i < x; i++){
+		if (*((battlefiled + i*n) + y) == 1)
+			return false;
+	}
+	//Check ^\ cross (<-)
+	int tx = x, ty = y;
+	while (tx != -1 && ty != -1){
+		if (*((battlefiled + tx*n) + ty) == 1)
+			return false;
+		tx--; ty--;
+	}tx = x, ty = y;
+	//check /^ cross (->)
+	while (tx != -1 && ty != n){
+		if (*((battlefiled + tx*n) + ty) == 1)
+			return false;
+		tx--; ty++;
+	}
+	return true;
+}
+
+bool doesPathExists(int * battlefield, int n, int x, int y, bool * compl){
+	if (x == n || y == n)
+		return false;
+	else{
+		if (checkSurroundings(battlefield, x, y, n)){
+			*((battlefield + x*n) + y) = 1;
+			if (x == n - 1)
+			{
+				*compl = true;
+				return true;
+			}
+			bool res = doesPathExists(battlefield, n, x + 1, 0, compl);
+			if (res)
+				return true;
+			else{
+				*((battlefield + x*n) + y) = 0;
+				doesPathExists(battlefield, n, x, y + 1, compl);
+			}
+		}
+		else{
+			bool res = doesPathExists(battlefield, n, x, y + 1, compl);
+			if (res && !compl){
+				*((battlefield + x*n) + y) = 1;
+				return doesPathExists(battlefield, n, x + 1, 0, compl);
+			}
+			else{
+				if (!(*compl)){
+					*((battlefield + x*n) + y) = 0;
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+}
+
+
 int solve_nsnipers(int *battlefield, int n){
-	return 0;
+	if (n == 2 || n == 3 || n <= 0 || battlefield == NULL)
+		return 0;
+	bool compl = false;
+	bool ans = doesPathExists(battlefield, n, 0, 0, &compl);
+	return ans ? 1 : 0;
 }
